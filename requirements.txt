@@ -1,0 +1,3 @@
+redis
+kafka
+kafka-python
