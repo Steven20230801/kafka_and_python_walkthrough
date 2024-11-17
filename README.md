@@ -2,15 +2,32 @@
 https://youtu.be/D2NYvGlbK0M
 
 
+```
+python -m venv venv
+pip install -r requirements.txt
+pip install git+https://github.com/dpkp/kafka-python.git
+```
+
+
 
 wget https://downloads.apache.org/kafka/3.8.1/kafka_2.13-3.8.1.tgz
 tar -xzf kafka_2.13-3.8.1.tgz
 # rename  kafka_2.13-3.8.1 dir  to kafka
 mv kafka_2.13-3.8.1 kafka
+
+
+
+sudo apt install redis-server -y
+
+sudo systemctl start redis
+
+sudo systemctl status redis
+
 cd kafka
 bin/zookeeper-server-start.sh config/zookeeper.properties
 
 # 確認ZooKeeper 是否正常運行
+cd kafka
 bin/zookeeper-shell.sh localhost:2181 ls /brokers/ids
 
 ```bash
@@ -28,7 +45,7 @@ bin/zookeeper-server-start.sh config/zookeeper.properties &
 
 
 # 2.4 启动 Kafka Broker
-
+cd kafka
 bin/kafka-server-start.sh config/server.properties
 
 2.5 创建 Kafka 主题（可选）
@@ -38,6 +55,43 @@ bin/kafka-topics.sh --create --topic stock_prices --bootstrap-server localhost:9
 
 # 创建 notifications 主题
 bin/kafka-topics.sh --create --topic notifications --bootstrap-server localhost:9092 --partitions 3 --replication-factor 1
+
+
+3. **启动 Producer（发布股价更新）**：
+   ```bash
+   python producer.py
+   ```
+
+4. **启动 Price Processor（处理股价变动并生成通知事件）**：
+   ```bash
+   python price_processor.py
+   ```
+
+5. **启动 Notifier（消费通知事件并发送通知）**：
+   ```bash
+   python notifier.py
+   ```
+
+6. **监控系统**：
+   - 您可以在控制台中观察到 Producer 发布的股价更新，Price Processor 处理后的通知事件，以及 Notifier 发送的通知消息。
+
+## kafdrop
+
+sudo apt install openjdk-17-jdk -y
+
+```bash
+wget https://github.com/obsidiandynamics/kafdrop/releases/download/4.0.2/kafdrop-4.0.2.jar 
+
+
+mv kafdrop-4.0.2.jar kafdrop.jar
+
+java -jar kafdrop.jar \
+  --kafka.brokerConnect=localhost:9092 \
+  --server.port=9000
+
+```
+
+
 
 您可以列出现有的 Kafka 主题以确认 Kafka 是否正在运行：
 

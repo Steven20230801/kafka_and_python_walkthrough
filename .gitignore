@@ -1,2 +1,4 @@
 venv/*
 kafka/*
+*.jar
+*.tgz
